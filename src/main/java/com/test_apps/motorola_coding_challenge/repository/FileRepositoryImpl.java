@@ -4,9 +4,11 @@ import com.test_apps.motorola_coding_challenge.service.StorageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.net.URI;
 import java.nio.file.*;
 import java.util.List;
 import java.util.Optional;
@@ -25,8 +27,24 @@ public class FileRepositoryImpl implements FileRepository {
 
     @Override
     public Resource get(String fileName) {
-        log.info("Getting file with name: {}", fileName);
-        return null;
+        try {
+            Optional.ofNullable(fileName)
+                    .filter(name -> !name.isEmpty())
+                    .orElseThrow(() -> new IllegalArgumentException("Error: file name required"));
+            log.info("Getting file with name: {}", fileName);
+
+            final URI filePathUri = storageService.buildFilePathUri(fileName);
+
+            Resource resource = new UrlResource(filePathUri);
+
+            if(!resource.exists() || !resource.isReadable()) {
+                throw new NoSuchFileException("File not found or not readable");
+            }
+            return resource;
+        } catch (Exception e) {
+            log.info("Get failed with message: {}", e.getMessage());
+            return null;
+        }
     }
 
     @Override
@@ -44,9 +62,7 @@ public class FileRepositoryImpl implements FileRepository {
 
             return fileName;
         } catch (Exception e) {
-
             log.info("Saving failed with message: {}", e.getMessage());
-
             return null;
         }
     }
