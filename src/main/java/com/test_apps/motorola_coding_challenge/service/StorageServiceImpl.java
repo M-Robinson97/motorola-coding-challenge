@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.net.URI;
 import java.nio.file.Path;
 
 @Service
@@ -18,5 +19,10 @@ public class StorageServiceImpl implements StorageService {
                 .append(fileName)
                 .toString();
         return Path.of(targetFileLocation);
+    }
+
+    @Override
+    public URI buildFilePathUri(String fileName) {
+        return buildFilePath(fileName).toUri();
     }
 }
