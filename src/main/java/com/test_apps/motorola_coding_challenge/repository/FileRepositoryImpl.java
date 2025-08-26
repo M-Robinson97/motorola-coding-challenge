@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import static com.test_apps.motorola_coding_challenge.utility.ExceptionMessages.*;
+
 @Slf4j
 @Repository
 @RequiredArgsConstructor
@@ -32,8 +34,7 @@ public class FileRepositoryImpl implements FileRepository {
                     .map(Path::toString)
                     .toList();
         } catch (Exception e) {
-            log.info("Get file names failed with message: {}", e.getMessage());
-            return null;
+            throw new RuntimeException(GET_ALL_FILES_FAILS, e);
         }
     }
 
@@ -42,20 +43,19 @@ public class FileRepositoryImpl implements FileRepository {
         try {
             Optional.ofNullable(fileName)
                     .filter(name -> !name.isEmpty())
-                    .orElseThrow(() -> new IllegalArgumentException("Error: file name required"));
+                    .orElseThrow(() -> new IllegalArgumentException(FILE_NAME_REQUIRED));
             log.info("Getting file with name: {}", fileName);
 
             final Path filePath = storageService.createFilePath(fileName);
             final URI filePathUri = storageService.createUri(filePath);
             final Resource resource = storageService.createResource(filePathUri);
 
-            if(!resource.exists() || !resource.isReadable()) {
-                throw new NoSuchFileException("File not found or not readable");
+            if (!resource.exists() || !resource.isReadable()) {
+                throw new NoSuchFileException(FILE_NOT_FOUND);
             }
             return resource;
         } catch (Exception e) {
-            log.info("Get file failed with message: {}", e.getMessage());
-            return null;
+            throw new RuntimeException(GET_FILE_FAILS, e);
         }
     }
 
@@ -64,7 +64,7 @@ public class FileRepositoryImpl implements FileRepository {
         try {
             Optional.of(file)
                     .filter(f -> !f.getName().isEmpty())
-                    .orElseThrow(() -> new IllegalArgumentException("Error: file name required"));
+                    .orElseThrow(() -> new IllegalArgumentException(FILE_NAME_REQUIRED));
 
             final String fileName = file.getName();
 
@@ -72,15 +72,13 @@ public class FileRepositoryImpl implements FileRepository {
 
             final Path filePath = storageService.createFilePath(fileName);
 
-            final InputStream inputStream = Optional.of(file.getInputStream())
-                    .orElseThrow(() -> new IllegalArgumentException("Error: no file content"));
+            final InputStream inputStream = file.getInputStream();
 
             storageService.copyFile(inputStream, filePath);
 
             return fileName;
         } catch (Exception e) {
-            log.info("Saving failed with message: {}", e.getMessage());
-            return null;
+            throw new RuntimeException(SAVE_FILE_FAILS, e);
         }
     }
 
@@ -89,7 +87,7 @@ public class FileRepositoryImpl implements FileRepository {
         try {
             Optional.ofNullable(fileName)
                     .filter(name -> !name.isEmpty())
-                    .orElseThrow(() -> new IllegalArgumentException("Error: file name required"));
+                    .orElseThrow(() -> new IllegalArgumentException(FILE_NAME_REQUIRED));
             log.info("Deleting file with name: {}", fileName);
 
             final Path filePath = storageService.createFilePath(fileName);
@@ -97,8 +95,7 @@ public class FileRepositoryImpl implements FileRepository {
 
             return true;
         } catch (Exception e) {
-            log.info("Delete failed with message: {}", e.getMessage());
-            return false;
+            throw new RuntimeException(DELETE_FILE_FAILS, e);
         }
     }
 }
