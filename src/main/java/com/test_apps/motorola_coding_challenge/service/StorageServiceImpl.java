@@ -6,8 +6,11 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 
+import java.io.InputStream;
 import java.net.URI;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 
 @Service
 @RequiredArgsConstructor
@@ -31,5 +34,15 @@ public class StorageServiceImpl implements StorageService {
     @Override
     public Resource createResource(URI uri) throws Exception {
         return new UrlResource(uri);
+    }
+
+    @Override
+    public void copyFile(InputStream inputStream, Path filePath) throws Exception {
+        Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
+    }
+
+    @Override
+    public void deleteFile(Path filePath) throws  Exception {
+        Files.delete(filePath);
     }
 }

@@ -78,7 +78,7 @@ public class FileRepositoryImplTest {
 
     @Test
     void get_ResourceNotFound() throws Exception {
-        final String fileNameMock = "FileRepositoryImplTest.java";;
+        final String fileNameMock = "FileRepositoryImplTest.java";
         final Path filePathMock = mock(Path.class);
         final URI fileUriMock = mock(URI.class);
         final Resource resourceMock = mock(UrlResource.class);

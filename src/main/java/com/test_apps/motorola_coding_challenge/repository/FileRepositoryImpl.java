@@ -4,12 +4,13 @@ import com.test_apps.motorola_coding_challenge.service.StorageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.InputStream;
 import java.net.URI;
-import java.nio.file.*;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 
@@ -55,10 +56,15 @@ public class FileRepositoryImpl implements FileRepository {
                     .orElseThrow(() -> new IllegalArgumentException("Error: file name required"));
 
             final String fileName = file.getName();
+
             log.info("Saving file with name: {}", fileName);
+
             final Path filePath = storageService.createFilePath(fileName);
 
-            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+            final InputStream inputStream = Optional.of(file.getInputStream())
+                    .orElseThrow(() -> new IllegalArgumentException("Error: no file content"));
+
+            storageService.copyFile(inputStream, filePath);
 
             return fileName;
         } catch (Exception e) {
@@ -68,7 +74,20 @@ public class FileRepositoryImpl implements FileRepository {
     }
 
     @Override
-    public void delete(String fileName) {
-        log.info("Deleting file with name: {}", fileName);
+    public String delete(String fileName) {
+        try {
+            Optional.ofNullable(fileName)
+                    .filter(name -> !name.isEmpty())
+                    .orElseThrow(() -> new IllegalArgumentException("Error: file name required"));
+            log.info("Deleting file with name: {}", fileName);
+
+            final Path filePath = storageService.createFilePath(fileName);
+            storageService.deleteFile(filePath);
+
+            return fileName;
+        } catch (Exception e) {
+            log.info("Delete failed with message: {}", e.getMessage());
+            return null;
+        }
     }
 }
