@@ -85,9 +85,7 @@ public class FileRepositoryImplTest {
         when(storageServiceMock.getAllPaths(rootPath)).thenThrow(new Exception());
 
         // Act
-        final Exception exception = assertThrows(Exception.class, () -> {
-            fileRepository.getAllFileNames();
-        });
+        final Exception exception = assertThrows(Exception.class, fileRepository::getAllFileNames);
 
         // Assert
         assertEquals(GET_ALL_FILES_FAILS, exception.getMessage());
@@ -134,14 +132,12 @@ public class FileRepositoryImplTest {
     }
 
     @Test
-    void get_NoFileName() throws Exception {
+    void get_NoFileName() {
         // Arrange
         final String fileName = "";
 
         // Act
-        final Exception exception = assertThrows(Exception.class, () -> {
-            fileRepository.get(fileName);
-        });
+        final Exception exception = assertThrows(Exception.class, () -> fileRepository.get(fileName));
 
         //Assert
         assertEquals(GET_FILE_FAILS, exception.getMessage());
@@ -163,9 +159,7 @@ public class FileRepositoryImplTest {
         when(resourceMock.exists()).thenReturn(false);
 
         // Act
-        final Exception exception = assertThrows(Exception.class, () -> {
-            fileRepository.get(fileNameMock);
-        });
+        final Exception exception = assertThrows(Exception.class, () -> fileRepository.get(fileNameMock));
 
         //Assert
         assertEquals(GET_FILE_FAILS, exception.getMessage());
@@ -189,9 +183,7 @@ public class FileRepositoryImplTest {
         when(resourceMock.isReadable()).thenReturn(false);
 
         // Act
-        final Exception exception = assertThrows(Exception.class, () -> {
-            fileRepository.get(fileNameMock);
-        });
+        final Exception exception = assertThrows(Exception.class, () -> fileRepository.get(fileNameMock));
 
         //Assert
         assertEquals(GET_FILE_FAILS, exception.getMessage());
@@ -221,16 +213,14 @@ public class FileRepositoryImplTest {
     }
 
     @Test
-    void save_NoFileName() throws Exception {
+    void save_NoFileName() {
         // Arrange
         final MultipartFile fileMock = mock(MultipartFile.class);
 
         when(fileMock.getName()).thenReturn("");
 
         // Act
-        final Exception exception = assertThrows(Exception.class, () -> {
-            fileRepository.save(fileMock);
-        });
+        final Exception exception = assertThrows(Exception.class, () -> fileRepository.save(fileMock));
 
         // Assert
         assertEquals(SAVE_FILE_FAILS, exception.getMessage());
@@ -250,9 +240,7 @@ public class FileRepositoryImplTest {
         when(storageServiceMock.createFilePath(fileName)).thenReturn(path);
 
         // Act
-        final Exception exception = assertThrows(Exception.class, () -> {
-            fileRepository.save(fileMock);
-        });
+        final Exception exception = assertThrows(Exception.class, () -> fileRepository.save(fileMock));
 
         // Assert
         assertEquals(SAVE_FILE_FAILS, exception.getMessage());
@@ -279,9 +267,7 @@ public class FileRepositoryImplTest {
         final String fileName = "";
 
         // Act
-        Exception exception = assertThrows(Exception.class, () -> {
-            fileRepository.delete(fileName);
-        });
+        Exception exception = assertThrows(Exception.class, () -> fileRepository.delete(fileName));
 
         // Assert
         assertEquals(DELETE_FILE_FAILS, exception.getMessage());
@@ -294,15 +280,12 @@ public class FileRepositoryImplTest {
         // Arrange
         final String fileName = "deleteMe.txt";
         final Path pathMock = mock(Path.class);
-        final String expectedMessage = "";
 
         when(storageServiceMock.createFilePath(fileName)).thenReturn(pathMock);
         doThrow(new Exception()).when(storageServiceMock).deleteFile(pathMock);
 
         // Act
-        Exception exception = assertThrows(Exception.class, () -> {
-            fileRepository.delete(fileName);
-        });
+        Exception exception = assertThrows(Exception.class, () -> fileRepository.delete(fileName));
 
         // Assert
         assertEquals(DELETE_FILE_FAILS, exception.getMessage());

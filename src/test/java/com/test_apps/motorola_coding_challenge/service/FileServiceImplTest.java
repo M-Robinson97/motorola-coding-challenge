@@ -69,7 +69,6 @@ public class FileServiceImplTest {
     void getFile_NoFiles() {
         // Arrange
         final String fileName = "fileName.txt";
-        final Resource resourceMock = mock(Resource.class);
         when(fileRepositoryMock.get(fileName)).thenReturn(null);
 
         // Act
