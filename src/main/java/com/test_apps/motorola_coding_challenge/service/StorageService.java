@@ -5,9 +5,12 @@ import org.springframework.core.io.Resource;
 import java.io.InputStream;
 import java.net.URI;
 import java.nio.file.Path;
+import java.util.stream.Stream;
 
 public interface StorageService {
-    String getPathFromRoot();
+    Path getPathFromRoot();
+
+    Stream<Path> getAllPaths(Path rootPath) throws Exception;
 
     Path createFilePath(String fileName);
 

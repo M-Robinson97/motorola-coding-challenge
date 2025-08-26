@@ -15,6 +15,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -27,10 +30,73 @@ public class FileRepositoryImplTest {
     StorageService storageServiceMock;
 
     @Test
+    void getAllFileNames_SucceedsWithFiles() throws Exception {
+        // Arrange
+        final String root = "\\root\\";
+        final String fileOne = root + "fileOne.txt";
+        final String fileTwo = root + "dirOne\\fileTwo.txt";
+        final String fileThree = root + "dirTwo\\dirThree\\fileThree.txt";
+
+        final Path rootPath = Path.of(root);
+        final Path fileOnePath = Path.of(fileOne);
+        final Path fileTwoPath = Path.of(fileTwo);
+        final Path fileThreePath = Path.of(fileThree);
+
+        Stream<Path> paths = Stream.of(fileOnePath, fileTwoPath, fileThreePath);
+
+        when(storageServiceMock.getPathFromRoot()).thenReturn(rootPath);
+        when(storageServiceMock.getAllPaths(rootPath)).thenReturn(paths);
+
+        List<String> expected = Arrays.asList(fileOne, fileTwo, fileThree);
+
+        // Act
+        List<String> result = fileRepository.getAllFileNames();
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(expected, result);
+    }
+
+    @Test
+    void getAllFileNames_SucceedsWithNoFiles() throws Exception {
+        // Arrange
+        final String root = "\\root\\";
+        final Path rootPath = Path.of(root);
+
+        Stream<Path> paths = Stream.empty();
+
+        when(storageServiceMock.getPathFromRoot()).thenReturn(rootPath);
+        when(storageServiceMock.getAllPaths(rootPath)).thenReturn(paths);
+
+        // Act
+        List<String> result = fileRepository.getAllFileNames();
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(0, result.size());
+    }
+
+    @Test
+    void getAllFileNames_ErrorFromService() throws Exception {
+        // Arrange
+        final String root = "\\root\\";
+        final Path rootPath = Path.of(root);
+
+        when(storageServiceMock.getPathFromRoot()).thenReturn(rootPath);
+        when(storageServiceMock.getAllPaths(rootPath)).thenThrow(new IOException());
+
+        // Act
+        List<String> result = fileRepository.getAllFileNames();
+
+        // Assert
+        assertNull(result);
+    }
+
+    @Test
     void get_Succeeds() throws Exception {
         // Arrange
         final String fileName = "FileRepositoryImplTest.java";
-        final Path filePath = Path.of("src/test/java/com/test_apps/motorola_coding_challenge/repository/FileRepositoryImplTest.java");
+        final Path filePath = Path.of("src\\test\\java\\com\\test_apps\\motorola_coding_challenge\\repository\\FileRepositoryImplTest.java");
         final URI fileUri = filePath.toUri();
         final Resource resource = new UrlResource(fileUri);
 
@@ -49,8 +115,8 @@ public class FileRepositoryImplTest {
     @Test
     void get_SucceedsWithExtraSlash() throws Exception {
         // Arrange
-        final String fileName = "/FileRepositoryImplTest.java";
-        final Path filePath = Path.of("src/test/java/com/test_apps/motorola_coding_challenge/repository//FileRepositoryImplTest.java");
+        final String fileName = "\\FileRepositoryImplTest.java";
+        final Path filePath = Path.of("src\\test\\java\\com\\test_apps\\motorola_coding_challenge\\repository\\\\FileRepositoryImplTest.java");
         final URI fileUri = filePath.toUri();
         final Resource resource = new UrlResource(fileUri);
 
@@ -178,7 +244,7 @@ public class FileRepositoryImplTest {
     }
 
     @Test
-    void delete_Succeeds() throws Exception {
+    void delete_Succeeds() {
         // Arrange
         final String fileName = "deleteMe.txt";
         final Path pathMock = mock(Path.class);
@@ -193,7 +259,7 @@ public class FileRepositoryImplTest {
     }
 
     @Test
-    void delete_NoFileName() throws Exception {
+    void delete_NoFileName() {
         // Arrange
         final String fileName = "";
 

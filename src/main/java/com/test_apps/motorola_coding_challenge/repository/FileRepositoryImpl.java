@@ -13,6 +13,7 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 @Slf4j
 @Repository
@@ -21,9 +22,19 @@ public class FileRepositoryImpl implements FileRepository {
     private final StorageService storageService;
 
     @Override
-    public List<String> getAllNames() {
-        log.info("Getting all files by name");
-        return List.of();
+    public List<String> getAllFileNames() {
+        try {
+            final Path rootPath = storageService.getPathFromRoot();
+            log.info("Getting file names from: {}", rootPath);
+            final Stream<Path> allFilePaths = storageService.getAllPaths(rootPath);
+
+            return allFilePaths
+                    .map(Path::toString)
+                    .toList();
+        } catch (Exception e) {
+            log.info("Get file names failed with message: {}", e.getMessage());
+            return null;
+        }
     }
 
     @Override
@@ -43,7 +54,7 @@ public class FileRepositoryImpl implements FileRepository {
             }
             return resource;
         } catch (Exception e) {
-            log.info("Get failed with message: {}", e.getMessage());
+            log.info("Get file failed with message: {}", e.getMessage());
             return null;
         }
     }

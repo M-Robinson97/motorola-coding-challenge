@@ -11,16 +11,31 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
 @Getter
 public class StorageServiceImpl implements StorageService {
-    private final String pathFromRoot = "src/main/java/com/test_apps/motorola_coding_challenge/repository/store/";
+    private final String root = "src/main/java/com/test_apps/motorola_coding_challenge/repository/store/";
+
+    @Override
+    public Path getPathFromRoot() {
+        return Path.of(root);
+    }
+
+    @Override
+    public Stream<Path> getAllPaths(Path rootPath) throws Exception {
+        try (Stream<Path> paths = Files.walk(rootPath)) {
+            return paths
+                    .filter(Files::isRegularFile)
+                    .map(rootPath::relativize);
+        }
+    }
 
     @Override
     public Path createFilePath(String fileName) {
-        String targetFileLocation = new StringBuilder(pathFromRoot)
+        String targetFileLocation = new StringBuilder(root)
                 .append(fileName)
                 .toString();
         return Path.of(targetFileLocation);

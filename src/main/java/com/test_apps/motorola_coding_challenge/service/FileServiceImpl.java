@@ -15,7 +15,7 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public List<String> listFiles() {
-        return fileRepository.getAllNames();
+        return fileRepository.getAllFileNames();
     }
 
     @Override
