@@ -33,9 +33,9 @@ public class FileRepositoryImpl implements FileRepository {
                     .orElseThrow(() -> new IllegalArgumentException("Error: file name required"));
             log.info("Getting file with name: {}", fileName);
 
-            final URI filePathUri = storageService.buildFilePathUri(fileName);
-
-            Resource resource = new UrlResource(filePathUri);
+            final Path filePath = storageService.createFilePath(fileName);
+            final URI filePathUri = storageService.createUri(filePath);
+            final Resource resource = storageService.createResource(filePathUri);
 
             if(!resource.exists() || !resource.isReadable()) {
                 throw new NoSuchFileException("File not found or not readable");
@@ -55,10 +55,10 @@ public class FileRepositoryImpl implements FileRepository {
                     .orElseThrow(() -> new IllegalArgumentException("Error: file name required"));
 
             final String fileName = file.getName();
-
             log.info("Saving file with name: {}", fileName);
+            final Path filePath = storageService.createFilePath(fileName);
 
-            Files.copy(file.getInputStream(), storageService.buildFilePath(fileName), StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
             return fileName;
         } catch (Exception e) {
