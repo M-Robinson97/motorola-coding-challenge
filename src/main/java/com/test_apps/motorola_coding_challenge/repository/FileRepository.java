@@ -12,5 +12,5 @@ public interface FileRepository {
 
     String save(MultipartFile file);
 
-    String delete(String fileName);
+    boolean delete(String fileName);
 }

@@ -12,5 +12,5 @@ public interface FileService {
 
     String postFile(MultipartFile file);
 
-    String deleteFile(String fileName);
+    boolean deleteFile(String fileName);
 }

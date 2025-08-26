@@ -252,10 +252,10 @@ public class FileRepositoryImplTest {
         when(storageServiceMock.createFilePath(fileName)).thenReturn(pathMock);
 
         // Act
-        final String result = fileRepository.delete(fileName);
+        final boolean result = fileRepository.delete(fileName);
 
         // Assert
-        assertEquals(fileName, result);
+        assertTrue(result);
     }
 
     @Test
@@ -264,10 +264,10 @@ public class FileRepositoryImplTest {
         final String fileName = "";
 
         // Act
-        final String result = fileRepository.delete(fileName);
+        final boolean result = fileRepository.delete(fileName);
 
         // Assert
-        assertNull(result);
+        assertFalse(result);
         verifyNoInteractions(storageServiceMock);
     }
 
@@ -281,10 +281,10 @@ public class FileRepositoryImplTest {
         doThrow(new IOException()).when(storageServiceMock).deleteFile(pathMock);
 
         // Act
-        final String result = fileRepository.delete(fileName);
+        final boolean result = fileRepository.delete(fileName);
 
         // Assert
-        assertNull(result);
+        assertFalse(result);
         verify(storageServiceMock, times(1)).deleteFile(pathMock);
     }
 }
