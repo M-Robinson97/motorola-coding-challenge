@@ -42,7 +42,7 @@ public class StorageServiceImpl implements StorageService {
     }
 
     @Override
-    public void deleteFile(Path filePath) throws  Exception {
+    public void deleteFile(Path filePath) throws Exception {
         Files.delete(filePath);
     }
 }

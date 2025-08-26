@@ -28,6 +28,7 @@ public class FileRepositoryImplTest {
 
     @Test
     void get_Succeeds() throws Exception {
+        // Arrange
         final String fileName = "FileRepositoryImplTest.java";
         final Path filePath = Path.of("src/test/java/com/test_apps/motorola_coding_challenge/repository/FileRepositoryImplTest.java");
         final URI fileUri = filePath.toUri();
@@ -47,6 +48,7 @@ public class FileRepositoryImplTest {
 
     @Test
     void get_SucceedsWithExtraSlash() throws Exception {
+        // Arrange
         final String fileName = "/FileRepositoryImplTest.java";
         final Path filePath = Path.of("src/test/java/com/test_apps/motorola_coding_challenge/repository//FileRepositoryImplTest.java");
         final URI fileUri = filePath.toUri();
@@ -66,6 +68,7 @@ public class FileRepositoryImplTest {
 
     @Test
     void get_NoFileName() {
+        // Arrange
         final String fileName = "";
 
         // Act
@@ -78,6 +81,7 @@ public class FileRepositoryImplTest {
 
     @Test
     void get_ResourceNotFound() throws Exception {
+        // Arrange
         final String fileNameMock = "FileRepositoryImplTest.java";
         final Path filePathMock = mock(Path.class);
         final URI fileUriMock = mock(URI.class);
@@ -99,6 +103,7 @@ public class FileRepositoryImplTest {
 
     @Test
     void get_ResourceNotReadable() throws Exception {
+        //Arrange
         final String fileNameMock = "FileRepositoryImplTest.java";
         final Path filePathMock = mock(Path.class);
         final URI fileUriMock = mock(URI.class);
@@ -170,5 +175,50 @@ public class FileRepositoryImplTest {
 
         // Assert
         assertNull(result);
+    }
+
+    @Test
+    void delete_Succeeds() throws Exception {
+        // Arrange
+        final String fileName = "deleteMe.txt";
+        final Path pathMock = mock(Path.class);
+
+        when(storageServiceMock.createFilePath(fileName)).thenReturn(pathMock);
+
+        // Act
+        final String result = fileRepository.delete(fileName);
+
+        // Assert
+        assertEquals(fileName, result);
+    }
+
+    @Test
+    void delete_NoFileName() throws Exception {
+        // Arrange
+        final String fileName = "";
+
+        // Act
+        final String result = fileRepository.delete(fileName);
+
+        // Assert
+        assertNull(result);
+        verifyNoInteractions(storageServiceMock);
+    }
+
+    @Test
+    void delete_CannotFindFile() throws Exception {
+        // Arrange
+        final String fileName = "deleteMe.txt";
+        final Path pathMock = mock(Path.class);
+
+        when(storageServiceMock.createFilePath(fileName)).thenReturn(pathMock);
+        doThrow(new IOException()).when(storageServiceMock).deleteFile(pathMock);
+
+        // Act
+        final String result = fileRepository.delete(fileName);
+
+        // Assert
+        assertNull(result);
+        verify(storageServiceMock, times(1)).deleteFile(pathMock);
     }
 }
