@@ -27,7 +27,7 @@ public class FileServiceImplTest {
     FileServiceImpl fileService;
 
     @Test
-    void listFiles_FilesFound() {
+    void listFiles_FilesFound() throws Exception {
         // Arrange
         final List<String> expected = Arrays.asList("name1", "name2", "name3");
         when(fileRepositoryMock.getAllFileNames()).thenReturn(expected);
@@ -40,7 +40,7 @@ public class FileServiceImplTest {
     }
 
     @Test
-    void listFiles_NoFiles() {
+    void listFiles_NoFiles() throws Exception {
         // Arrange
         when(fileRepositoryMock.getAllFileNames()).thenReturn(null);
 
@@ -52,7 +52,7 @@ public class FileServiceImplTest {
     }
 
     @Test
-    void getFile_FileFound() {
+    void getFile_FileFound() throws Exception {
         // Arrange
         final String fileName = "fileName.txt";
         final Resource resourceMock = mock(Resource.class);
@@ -66,7 +66,7 @@ public class FileServiceImplTest {
     }
 
     @Test
-    void getFile_NoFiles() {
+    void getFile_NoFiles() throws Exception {
         // Arrange
         final String fileName = "fileName.txt";
         when(fileRepositoryMock.get(fileName)).thenReturn(null);
@@ -79,7 +79,7 @@ public class FileServiceImplTest {
     }
 
     @Test
-    void postFile_FileCreated() {
+    void postFile_FileCreated() throws Exception {
         // Arrange
         final MultipartFile fileMock = mock(MultipartFile.class);
         final String fileName = "fileName.txt";
@@ -93,7 +93,7 @@ public class FileServiceImplTest {
     }
 
     @Test
-    void postFile_FileNotCreated() {
+    void postFile_FileNotCreated() throws Exception {
         // Arrange
         final MultipartFile fileMock = mock(MultipartFile.class);
         when(fileRepositoryMock.save(fileMock)).thenReturn(null);
@@ -106,7 +106,7 @@ public class FileServiceImplTest {
     }
 
     @Test
-    void deleteFile_FileDeleted() {
+    void deleteFile_FileDeleted() throws Exception {
         // Arrange
         final String fileName = "fileName.txt";
         when(fileRepositoryMock.delete(fileName)).thenReturn(true);
@@ -119,7 +119,7 @@ public class FileServiceImplTest {
     }
 
     @Test
-    void deleteFile_FileNotDeleted() {
+    void deleteFile_FileNotDeleted() throws Exception {
         // Arrange
         final String fileName = "fileName.txt";
         when(fileRepositoryMock.delete(fileName)).thenReturn(false);

@@ -14,22 +14,22 @@ public class FileServiceImpl implements FileService {
     private final FileRepository fileRepository;
 
     @Override
-    public List<String> listFiles() {
+    public List<String> listFiles() throws Exception {
         return fileRepository.getAllFileNames();
     }
 
     @Override
-    public Resource getFile(String fileName) {
+    public Resource getFile(String fileName) throws Exception {
         return fileRepository.get(fileName);
     }
 
     @Override
-    public String postFile(MultipartFile file) {
+    public String postFile(MultipartFile file) throws Exception {
         return fileRepository.save(file);
     }
 
     @Override
-    public boolean deleteFile(String fileName) {
+    public boolean deleteFile(String fileName) throws Exception {
         return fileRepository.delete(fileName);
     }
 }

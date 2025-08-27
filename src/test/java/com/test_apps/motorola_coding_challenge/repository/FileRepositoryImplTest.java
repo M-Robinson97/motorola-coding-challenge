@@ -1,5 +1,7 @@
 package com.test_apps.motorola_coding_challenge.repository;
 
+import com.test_apps.motorola_coding_challenge.exception.FileNameRequiredException;
+import com.test_apps.motorola_coding_challenge.exception.FileNotFoundException;
 import com.test_apps.motorola_coding_challenge.service.StorageService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,7 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static com.test_apps.motorola_coding_challenge.utility.ExceptionMessages.*;
+import static com.test_apps.motorola_coding_challenge.exception.ExceptionMessages.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -137,11 +139,10 @@ public class FileRepositoryImplTest {
         final String fileName = "";
 
         // Act
-        final Exception exception = assertThrows(Exception.class, () -> fileRepository.get(fileName));
+        final Exception exception = assertThrows(FileNameRequiredException.class, () -> fileRepository.get(fileName));
 
         //Assert
-        assertEquals(GET_FILE_FAILS, exception.getMessage());
-        assertEquals(FILE_NAME_REQUIRED, exception.getCause().getMessage());
+        assertEquals(FILE_NAME_REQUIRED_ERROR, exception.getMessage());
         verifyNoInteractions(storageServiceMock);
     }
 
@@ -159,11 +160,10 @@ public class FileRepositoryImplTest {
         when(resourceMock.exists()).thenReturn(false);
 
         // Act
-        final Exception exception = assertThrows(Exception.class, () -> fileRepository.get(fileNameMock));
+        final Exception exception = assertThrows(FileNotFoundException.class, () -> fileRepository.get(fileNameMock));
 
         //Assert
-        assertEquals(GET_FILE_FAILS, exception.getMessage());
-        assertEquals(FILE_NOT_FOUND, exception.getCause().getMessage());
+        assertEquals(FILE_NOT_FOUND_ERROR, exception.getMessage());
         verify(resourceMock, times(1)).exists();
         verifyNoMoreInteractions(resourceMock);
     }
@@ -183,11 +183,10 @@ public class FileRepositoryImplTest {
         when(resourceMock.isReadable()).thenReturn(false);
 
         // Act
-        final Exception exception = assertThrows(Exception.class, () -> fileRepository.get(fileNameMock));
+        final Exception exception = assertThrows(FileNotFoundException.class, () -> fileRepository.get(fileNameMock));
 
         //Assert
-        assertEquals(GET_FILE_FAILS, exception.getMessage());
-        assertEquals(FILE_NOT_FOUND, exception.getCause().getMessage());
+        assertEquals(FILE_NOT_FOUND_ERROR, exception.getMessage());
         verify(resourceMock, times(1)).exists();
         verify(resourceMock, times(1)).isReadable();
     }
@@ -223,8 +222,7 @@ public class FileRepositoryImplTest {
         final Exception exception = assertThrows(Exception.class, () -> fileRepository.save(fileMock));
 
         // Assert
-        assertEquals(SAVE_FILE_FAILS, exception.getMessage());
-        assertEquals(FILE_NAME_REQUIRED, exception.getCause().getMessage());
+        assertEquals(FILE_NAME_REQUIRED_ERROR, exception.getMessage());
         verifyNoInteractions(storageServiceMock);
     }
 
@@ -247,7 +245,7 @@ public class FileRepositoryImplTest {
     }
 
     @Test
-    void delete_Succeeds() {
+    void delete_Succeeds() throws Exception {
         // Arrange
         final String fileName = "deleteMe.txt";
         final Path pathMock = mock(Path.class);
@@ -267,11 +265,10 @@ public class FileRepositoryImplTest {
         final String fileName = "";
 
         // Act
-        Exception exception = assertThrows(Exception.class, () -> fileRepository.delete(fileName));
+        Exception exception = assertThrows(FileNameRequiredException.class, () -> fileRepository.delete(fileName));
 
         // Assert
-        assertEquals(DELETE_FILE_FAILS, exception.getMessage());
-        assertEquals(FILE_NAME_REQUIRED, exception.getCause().getMessage());
+        assertEquals(FILE_NAME_REQUIRED_ERROR, exception.getMessage());
         verifyNoInteractions(storageServiceMock);
     }
 
@@ -282,13 +279,13 @@ public class FileRepositoryImplTest {
         final Path pathMock = mock(Path.class);
 
         when(storageServiceMock.createFilePath(fileName)).thenReturn(pathMock);
-        doThrow(new Exception()).when(storageServiceMock).deleteFile(pathMock);
+        doThrow(new Exception(FILE_SYSTEM_ERROR)).when(storageServiceMock).deleteFile(pathMock);
 
         // Act
         Exception exception = assertThrows(Exception.class, () -> fileRepository.delete(fileName));
 
         // Assert
-        assertEquals(DELETE_FILE_FAILS, exception.getMessage());
+        assertEquals(FILE_SYSTEM_ERROR, exception.getMessage());
         verify(storageServiceMock, times(1)).deleteFile(pathMock);
     }
 }
