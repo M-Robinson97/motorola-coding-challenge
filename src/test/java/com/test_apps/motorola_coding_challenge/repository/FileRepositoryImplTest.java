@@ -253,10 +253,10 @@ public class FileRepositoryImplTest {
         when(storageServiceMock.createFilePath(fileName)).thenReturn(pathMock);
 
         // Act
-        final boolean result = fileRepository.delete(fileName);
+        fileRepository.delete(fileName);
 
         // Assert
-        assertTrue(result);
+        verify(storageServiceMock, times(1)).deleteFile(pathMock);
     }
 
     @Test

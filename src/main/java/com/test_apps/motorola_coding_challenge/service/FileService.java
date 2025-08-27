@@ -12,5 +12,5 @@ public interface FileService {
 
     String postFile(MultipartFile file) throws Exception;
 
-    boolean deleteFile(String fileName) throws Exception;
+    void deleteFile(String fileName) throws Exception;
 }

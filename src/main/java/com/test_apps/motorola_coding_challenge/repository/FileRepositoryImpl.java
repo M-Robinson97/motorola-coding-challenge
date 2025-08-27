@@ -77,7 +77,7 @@ public class FileRepositoryImpl implements FileRepository {
     }
 
     @Override
-    public boolean delete(String fileName) throws Exception {
+    public void delete(String fileName) throws Exception {
         Optional.ofNullable(fileName)
                 .filter(name -> !name.isEmpty())
                 .orElseThrow(() -> new FileNameRequiredException(FILE_NAME_REQUIRED_ERROR));
@@ -85,7 +85,5 @@ public class FileRepositoryImpl implements FileRepository {
 
         final Path filePath = storageService.createFilePath(fileName);
         storageService.deleteFile(filePath);
-
-        return true;
     }
 }

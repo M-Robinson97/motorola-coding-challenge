@@ -29,7 +29,7 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public boolean deleteFile(String fileName) throws Exception {
-        return fileRepository.delete(fileName);
+    public void deleteFile(String fileName) throws Exception {
+        fileRepository.delete(fileName);
     }
 }

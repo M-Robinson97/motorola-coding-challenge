@@ -12,5 +12,5 @@ public interface FileRepository {
 
     String save(MultipartFile file) throws Exception;
 
-    boolean delete(String fileName) throws Exception;
+    void delete(String fileName) throws Exception;
 }

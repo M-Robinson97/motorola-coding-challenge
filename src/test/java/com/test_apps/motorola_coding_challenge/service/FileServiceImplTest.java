@@ -1,5 +1,7 @@
 package com.test_apps.motorola_coding_challenge.service;
 
+import com.test_apps.motorola_coding_challenge.exception.FileNotFoundException;
+import com.test_apps.motorola_coding_challenge.exception.FileSystemException;
 import com.test_apps.motorola_coding_challenge.repository.FileRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,11 +12,13 @@ import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
+import static com.test_apps.motorola_coding_challenge.exception.ExceptionMessages.FILE_NOT_FOUND_ERROR;
+import static com.test_apps.motorola_coding_challenge.exception.ExceptionMessages.FILE_SYSTEM_ERROR;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /*
 Minimal tests as service is pass-through for MVP
@@ -40,15 +44,28 @@ public class FileServiceImplTest {
     }
 
     @Test
-    void listFiles_NoFiles() throws Exception {
+    void listFiles_EmptyList() throws Exception {
         // Arrange
-        when(fileRepositoryMock.getAllFileNames()).thenReturn(null);
+        when(fileRepositoryMock.getAllFileNames()).thenReturn(Collections.emptyList());
 
         // Act
         final List<String> result = fileService.listFiles();
 
         // Assert
-        assertNull(result);
+        assertNotNull(result);
+        assertEquals(0, result.size());
+    }
+
+    @Test
+    void listFiles_ErrorThrown() throws Exception {
+        // Arrange
+        when(fileRepositoryMock.getAllFileNames()).thenThrow(new FileSystemException(FILE_SYSTEM_ERROR));
+
+        // Act
+        final Exception exception = assertThrows(FileSystemException.class, () -> fileService.listFiles());
+
+        // Assert
+        assertEquals(FILE_SYSTEM_ERROR, exception.getMessage());
     }
 
     @Test
@@ -69,13 +86,13 @@ public class FileServiceImplTest {
     void getFile_NoFiles() throws Exception {
         // Arrange
         final String fileName = "fileName.txt";
-        when(fileRepositoryMock.get(fileName)).thenReturn(null);
+        when(fileRepositoryMock.get(fileName)).thenThrow(new FileNotFoundException(FILE_NOT_FOUND_ERROR));
 
         // Act
-        final Resource result = fileService.getFile(fileName);
+        final Exception exception = assertThrows(FileNotFoundException.class, () -> fileService.getFile(fileName));
 
         // Assert
-        assertNull(result);
+        assertEquals(FILE_NOT_FOUND_ERROR, exception.getMessage());
     }
 
     @Test
@@ -96,38 +113,37 @@ public class FileServiceImplTest {
     void postFile_FileNotCreated() throws Exception {
         // Arrange
         final MultipartFile fileMock = mock(MultipartFile.class);
-        when(fileRepositoryMock.save(fileMock)).thenReturn(null);
+        when(fileRepositoryMock.save(fileMock)).thenThrow(new FileSystemException(FILE_SYSTEM_ERROR));
 
         // Act
-        final String result = fileService.postFile(fileMock);
+        final Exception result = assertThrows(FileSystemException.class, () -> fileService.postFile(fileMock));
 
         // Assert
-        assertNull(result);
+        assertEquals(FILE_SYSTEM_ERROR, result.getMessage());
     }
 
     @Test
     void deleteFile_FileDeleted() throws Exception {
         // Arrange
         final String fileName = "fileName.txt";
-        when(fileRepositoryMock.delete(fileName)).thenReturn(true);
 
         // Act
-        final boolean result = fileService.deleteFile(fileName);
+        fileService.deleteFile(fileName);
 
         // Assert
-        assertTrue(result);
+        verify(fileRepositoryMock, times(1)).delete(fileName);
     }
 
     @Test
     void deleteFile_FileNotDeleted() throws Exception {
         // Arrange
         final String fileName = "fileName.txt";
-        when(fileRepositoryMock.delete(fileName)).thenReturn(false);
+        doThrow(new FileNotFoundException(FILE_NOT_FOUND_ERROR)).when(fileRepositoryMock).delete(fileName);
 
         // Act
-        final boolean result = fileService.deleteFile(fileName);
+        final Exception exception = assertThrows(FileNotFoundException.class, () -> fileService.deleteFile(fileName));
 
         // Assert
-        assertFalse(result);
+        assertEquals(FILE_NOT_FOUND_ERROR, exception.getMessage());
     }
 }
