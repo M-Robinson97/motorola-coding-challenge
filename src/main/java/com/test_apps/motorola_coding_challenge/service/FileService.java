@@ -6,11 +6,11 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 public interface FileService {
-    List<String> listFiles() throws Exception;
+    List<String> listFiles();
 
-    Resource getFile(String fileName) throws Exception;
+    Resource getFile(String fileName);
 
-    String postFile(MultipartFile file) throws Exception;
+    String postFile(MultipartFile file);
 
-    void deleteFile(String fileName) throws Exception;
+    void deleteFile(String fileName);
 }

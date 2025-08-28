@@ -1,7 +1,7 @@
 package com.test_apps.motorola_coding_challenge.repository;
 
-import com.test_apps.motorola_coding_challenge.exception.FileNameRequiredException;
 import com.test_apps.motorola_coding_challenge.exception.FileNotFoundException;
+import com.test_apps.motorola_coding_challenge.exception.FileSystemException;
 import com.test_apps.motorola_coding_challenge.service.StorageService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,6 +12,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.nio.file.Path;
@@ -134,16 +135,23 @@ public class FileRepositoryImplTest {
     }
 
     @Test
-    void get_NoFileName() {
+    void get_ServiceError() throws Exception {
         // Arrange
-        final String fileName = "";
+        final String fileNameMock = "FileRepositoryImplTest.java";
+        final Path filePathMock = mock(Path.class);
+        final URI fileUriMock = mock(URI.class);
+        final Resource resourceMock = mock(UrlResource.class);
+
+        when(storageServiceMock.createFilePath(fileNameMock)).thenReturn(filePathMock);
+        when(storageServiceMock.createUri(filePathMock)).thenReturn(fileUriMock);
+        when(storageServiceMock.createResource(fileUriMock)).thenThrow(new FileSystemException(GET_FILE_FAILS));
 
         // Act
-        final Exception exception = assertThrows(FileNameRequiredException.class, () -> fileRepository.get(fileName));
+        final Exception exception = assertThrows(FileSystemException.class, () -> fileRepository.get(fileNameMock));
 
         //Assert
-        assertEquals(FILE_NAME_REQUIRED_ERROR, exception.getMessage());
-        verifyNoInteractions(storageServiceMock);
+        assertEquals(GET_FILE_FAILS, exception.getMessage());
+        verifyNoMoreInteractions(resourceMock);
     }
 
     @Test
@@ -199,31 +207,15 @@ public class FileRepositoryImplTest {
         final MultipartFile fileMock = mock(MultipartFile.class);
         final InputStream inputStreamMock = mock(InputStream.class);
 
-        when(fileMock.getName()).thenReturn(fileName);
         when(fileMock.getInputStream()).thenReturn(inputStreamMock);
         when(storageServiceMock.createFilePath(fileName)).thenReturn(path);
 
         // Act
-        final String result = fileRepository.save(fileMock);
+        final String result = fileRepository.save(fileMock, fileName);
 
         // Assert
         assertNotNull(result);
         assertEquals(fileName, result);
-    }
-
-    @Test
-    void save_NoFileName() {
-        // Arrange
-        final MultipartFile fileMock = mock(MultipartFile.class);
-
-        when(fileMock.getName()).thenReturn("");
-
-        // Act
-        final Exception exception = assertThrows(Exception.class, () -> fileRepository.save(fileMock));
-
-        // Assert
-        assertEquals(FILE_NAME_REQUIRED_ERROR, exception.getMessage());
-        verifyNoInteractions(storageServiceMock);
     }
 
     @Test
@@ -233,12 +225,11 @@ public class FileRepositoryImplTest {
         final Path path = Path.of(fileName);
         final MultipartFile fileMock = mock(MultipartFile.class);
 
-        when(fileMock.getName()).thenReturn(fileName);
-        when(fileMock.getInputStream()).thenThrow(new RuntimeException(SAVE_FILE_FAILS));
         when(storageServiceMock.createFilePath(fileName)).thenReturn(path);
+        when(fileMock.getInputStream()).thenThrow(new IOException());
 
         // Act
-        final Exception exception = assertThrows(Exception.class, () -> fileRepository.save(fileMock));
+        final FileSystemException exception = assertThrows(FileSystemException.class, () -> fileRepository.save(fileMock, fileName));
 
         // Assert
         assertEquals(SAVE_FILE_FAILS, exception.getMessage());
@@ -260,32 +251,19 @@ public class FileRepositoryImplTest {
     }
 
     @Test
-    void delete_NoFileName() {
-        // Arrange
-        final String fileName = "";
-
-        // Act
-        Exception exception = assertThrows(FileNameRequiredException.class, () -> fileRepository.delete(fileName));
-
-        // Assert
-        assertEquals(FILE_NAME_REQUIRED_ERROR, exception.getMessage());
-        verifyNoInteractions(storageServiceMock);
-    }
-
-    @Test
     void delete_CannotFindFile() throws Exception {
         // Arrange
         final String fileName = "deleteMe.txt";
         final Path pathMock = mock(Path.class);
 
         when(storageServiceMock.createFilePath(fileName)).thenReturn(pathMock);
-        doThrow(new Exception(FILE_SYSTEM_ERROR)).when(storageServiceMock).deleteFile(pathMock);
+        doThrow(new FileSystemException(DELETE_FILE_FAILS)).when(storageServiceMock).deleteFile(pathMock);
 
         // Act
         Exception exception = assertThrows(Exception.class, () -> fileRepository.delete(fileName));
 
         // Assert
-        assertEquals(FILE_SYSTEM_ERROR, exception.getMessage());
+        assertEquals(DELETE_FILE_FAILS, exception.getMessage());
         verify(storageServiceMock, times(1)).deleteFile(pathMock);
     }
 }

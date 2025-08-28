@@ -1,6 +1,5 @@
 package com.test_apps.motorola_coding_challenge.repository;
 
-import com.test_apps.motorola_coding_challenge.exception.FileNameRequiredException;
 import com.test_apps.motorola_coding_challenge.exception.FileNotFoundException;
 import com.test_apps.motorola_coding_challenge.exception.FileSystemException;
 import com.test_apps.motorola_coding_challenge.service.StorageService;
@@ -14,7 +13,6 @@ import java.io.InputStream;
 import java.net.URI;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import static com.test_apps.motorola_coding_challenge.exception.ExceptionMessages.*;
@@ -27,11 +25,9 @@ public class FileRepositoryImpl implements FileRepository {
 
     @Override
     public List<String> getAllFileNames() {
-        try {
             final Path rootPath = storageService.getPathFromRoot();
             log.info("Getting file names from: {}", rootPath);
-            final Stream<Path> allFilePaths = storageService.getAllPaths(rootPath);
-
+        try (Stream<Path> allFilePaths = storageService.getAllPaths(rootPath)) {
             return allFilePaths
                     .map(Path::toString)
                     .toList();
@@ -41,16 +37,17 @@ public class FileRepositoryImpl implements FileRepository {
     }
 
     @Override
-    public Resource get(String fileName) throws Exception {
-        Optional.ofNullable(fileName)
-                .filter(name -> !name.isEmpty())
-                .orElseThrow(() -> new FileNameRequiredException(FILE_NAME_REQUIRED_ERROR));
+    public Resource get(String fileName) {
         log.info("Getting file with name: {}", fileName);
 
         final Path filePath = storageService.createFilePath(fileName);
         final URI filePathUri = storageService.createUri(filePath);
-        final Resource resource = storageService.createResource(filePathUri);
-
+        Resource resource;
+        try {
+            resource = storageService.createResource(filePathUri);
+        } catch (Exception e) {
+            throw new FileSystemException(GET_FILE_FAILS, e);
+        }
         if (!resource.exists() || !resource.isReadable()) {
             throw new FileNotFoundException(FILE_NOT_FOUND_ERROR);
         }
@@ -58,32 +55,27 @@ public class FileRepositoryImpl implements FileRepository {
     }
 
     @Override
-    public String save(MultipartFile file) throws Exception {
-        Optional.of(file)
-                .filter(f -> !f.getName().isEmpty())
-                .orElseThrow(() -> new FileNameRequiredException(FILE_NAME_REQUIRED_ERROR));
-
-        final String fileName = file.getName();
-
+    public String save(MultipartFile file, String fileName) {
         log.info("Saving file with name: {}", fileName);
 
         final Path filePath = storageService.createFilePath(fileName);
 
-        final InputStream inputStream = file.getInputStream();
-
-        storageService.copyFile(inputStream, filePath);
-
-        return fileName;
+        try (InputStream inputStream = file.getInputStream()) {
+            storageService.copyFile(inputStream, filePath);
+            return fileName;
+        } catch (Exception e) {
+            throw new FileSystemException(SAVE_FILE_FAILS, e);
+        }
     }
 
     @Override
-    public void delete(String fileName) throws Exception {
-        Optional.ofNullable(fileName)
-                .filter(name -> !name.isEmpty())
-                .orElseThrow(() -> new FileNameRequiredException(FILE_NAME_REQUIRED_ERROR));
+    public void delete(String fileName) {
         log.info("Deleting file with name: {}", fileName);
-
-        final Path filePath = storageService.createFilePath(fileName);
-        storageService.deleteFile(filePath);
+        try {
+            final Path filePath = storageService.createFilePath(fileName);
+            storageService.deleteFile(filePath);
+        } catch (Exception e) {
+            throw new FileSystemException(DELETE_FILE_FAILS, e);
+        }
     }
 }
