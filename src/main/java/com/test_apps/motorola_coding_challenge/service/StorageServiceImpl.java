@@ -1,7 +1,9 @@
 package com.test_apps.motorola_coding_challenge.service;
 
+import com.test_apps.motorola_coding_challenge.service.util.StorageProperties;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
@@ -17,11 +19,12 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 @Getter
 public class StorageServiceImpl implements StorageService {
-    private final String root = "src/main/java/com/test_apps/motorola_coding_challenge/repository/store/";
+
+    private final StorageProperties storageProperties;
 
     @Override
     public Path getPathFromRoot() {
-        return Path.of(root);
+        return storageProperties.getRootPath();
     }
 
     @Override
@@ -35,10 +38,7 @@ public class StorageServiceImpl implements StorageService {
 
     @Override
     public Path createFilePath(String fileName) {
-        String targetFileLocation = new StringBuilder(root)
-                .append(fileName)
-                .toString();
-        return Path.of(targetFileLocation);
+        return getPathFromRoot().resolve(Path.of(fileName));
     }
 
     @Override
