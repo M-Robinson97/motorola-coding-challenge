@@ -13,7 +13,6 @@ import java.io.InputStream;
 import java.net.URI;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.stream.Stream;
 
 import static com.test_apps.motorola_coding_challenge.exception.ExceptionMessages.*;
 
@@ -27,8 +26,8 @@ public class FileRepositoryImpl implements FileRepository {
     public List<String> getAllFileNames() {
             final Path rootPath = storageService.getPathFromRoot();
             log.info("Getting file names from: {}", rootPath);
-        try (Stream<Path> allFilePaths = storageService.getAllPaths(rootPath)) {
-            return allFilePaths
+        try {
+            return storageService.getAllPaths(rootPath)
                     .map(Path::toString)
                     .toList();
         } catch (Exception e) {

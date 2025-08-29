@@ -1,4 +1,4 @@
-package com.test_apps.motorola_coding_challenge.application;
+package com.test_apps.motorola_coding_challenge;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

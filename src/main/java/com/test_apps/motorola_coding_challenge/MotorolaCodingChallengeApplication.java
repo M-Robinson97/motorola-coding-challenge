@@ -1,4 +1,4 @@
-package com.test_apps.motorola_coding_challenge.application;
+package com.test_apps.motorola_coding_challenge;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -10,5 +10,4 @@ public class MotorolaCodingChallengeApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(MotorolaCodingChallengeApplication.class, args);
 	}
-
 }

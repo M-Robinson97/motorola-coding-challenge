@@ -1,6 +1,7 @@
 package com.test_apps.motorola_coding_challenge.controller;
 
 import com.test_apps.motorola_coding_challenge.service.FileService;
+import com.test_apps.motorola_coding_challenge.model.FileListDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -18,14 +19,15 @@ public class FileManagerController {
 
     private final FileService fileService;
 
-    // GET /files
+    // GET /fileManager
     @GetMapping
-    public ResponseEntity<List<String>> listFiles() {
+    public ResponseEntity<FileListDto> listFiles() {
         final List<String> files = fileService.listFiles();
-        return ResponseEntity.ok(files);
+        final FileListDto dto = new FileListDto(files);
+        return ResponseEntity.ok(dto);
     }
 
-    // GET /files/{filename}
+    // GET /fileManager/{filename}
     @GetMapping("/{filename}")
     public ResponseEntity<Resource> getFile(@PathVariable String filename) {
         Resource file = fileService.getFile(filename);
@@ -34,14 +36,14 @@ public class FileManagerController {
                  .body(file);
     }
 
-    // POST /files
+    // POST /fileManager
     @PostMapping
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
         String savedFileName = fileService.postFile(file);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedFileName);
     }
 
-    // DELETE /files/{filename}
+    // DELETE /fileManager/{filename}
     @DeleteMapping
     public ResponseEntity<Void> deleteFile(@PathVariable String filename) {
         fileService.deleteFile(filename);

@@ -3,7 +3,6 @@ package com.test_apps.motorola_coding_challenge.service;
 import com.test_apps.motorola_coding_challenge.service.util.StorageProperties;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
@@ -29,10 +28,12 @@ public class StorageServiceImpl implements StorageService {
 
     @Override
     public Stream<Path> getAllPaths(Path rootPath) throws Exception {
-        try (Stream<Path> paths = Files.walk(rootPath)) {
-            return paths
+        try (Stream<Path> stream = Files.walk(rootPath)) {
+            return stream
                     .filter(Files::isRegularFile)
-                    .map(rootPath::relativize);
+                    .map(rootPath::relativize)
+                    .toList()
+                    .stream();
         }
     }
 
