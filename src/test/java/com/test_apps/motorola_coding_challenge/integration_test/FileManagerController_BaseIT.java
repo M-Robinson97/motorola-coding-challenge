@@ -50,7 +50,7 @@ public abstract class FileManagerController_BaseIT {
     protected void writeTestTextFile(String relativePath, String content) throws Exception {
         final File toWrite = new File(tmpDir.toFile(), relativePath);
         boolean isSuccess = toWrite.getParentFile().mkdirs();
-        if(!isSuccess) throw new Exception("Could not create directories");
+        log.info("Directories created for {}: {}", relativePath, isSuccess);
         try(FileWriter writer = new FileWriter(toWrite)) {
             writer.write(content);
         }
