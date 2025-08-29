@@ -1,6 +1,6 @@
 package com.test_apps.motorola_coding_challenge.service;
 
-import com.test_apps.motorola_coding_challenge.exception.FileNameRequiredException;
+import com.test_apps.motorola_coding_challenge.repository.exception.FileNameRequiredException;
 import com.test_apps.motorola_coding_challenge.repository.FileRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
@@ -12,7 +12,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 
-import static com.test_apps.motorola_coding_challenge.exception.ExceptionMessages.*;
+import static com.test_apps.motorola_coding_challenge.repository.exception.ExceptionMessages.*;
 
 @Service
 @RequiredArgsConstructor

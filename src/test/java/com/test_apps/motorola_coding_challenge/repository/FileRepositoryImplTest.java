@@ -1,7 +1,7 @@
 package com.test_apps.motorola_coding_challenge.repository;
 
-import com.test_apps.motorola_coding_challenge.exception.FileNotFoundException;
-import com.test_apps.motorola_coding_challenge.exception.FileSystemException;
+import com.test_apps.motorola_coding_challenge.repository.exception.FileNotFoundException;
+import com.test_apps.motorola_coding_challenge.repository.exception.FileSystemException;
 import com.test_apps.motorola_coding_challenge.service.StorageService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,7 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static com.test_apps.motorola_coding_challenge.exception.ExceptionMessages.*;
+import static com.test_apps.motorola_coding_challenge.repository.exception.ExceptionMessages.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 

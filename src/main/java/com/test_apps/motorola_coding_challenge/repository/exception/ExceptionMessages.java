@@ -1,4 +1,4 @@
-package com.test_apps.motorola_coding_challenge.exception;
+package com.test_apps.motorola_coding_challenge.repository.exception;
 
 import lombok.experimental.UtilityClass;
 

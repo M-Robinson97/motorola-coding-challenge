@@ -1,4 +1,4 @@
-package com.test_apps.motorola_coding_challenge.exception;
+package com.test_apps.motorola_coding_challenge.repository.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.test_apps.motorola_coding_challenge.exception.ExceptionMessages.*;
+import static com.test_apps.motorola_coding_challenge.repository.exception.ExceptionMessages.*;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {

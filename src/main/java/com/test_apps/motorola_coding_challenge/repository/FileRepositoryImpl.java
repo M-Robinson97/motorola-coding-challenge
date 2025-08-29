@@ -1,7 +1,7 @@
 package com.test_apps.motorola_coding_challenge.repository;
 
-import com.test_apps.motorola_coding_challenge.exception.FileNotFoundException;
-import com.test_apps.motorola_coding_challenge.exception.FileSystemException;
+import com.test_apps.motorola_coding_challenge.repository.exception.FileNotFoundException;
+import com.test_apps.motorola_coding_challenge.repository.exception.FileSystemException;
 import com.test_apps.motorola_coding_challenge.service.StorageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +14,7 @@ import java.net.URI;
 import java.nio.file.Path;
 import java.util.List;
 
-import static com.test_apps.motorola_coding_challenge.exception.ExceptionMessages.*;
+import static com.test_apps.motorola_coding_challenge.repository.exception.ExceptionMessages.*;
 
 @Slf4j
 @Repository
