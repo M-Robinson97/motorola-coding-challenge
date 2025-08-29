@@ -37,7 +37,7 @@ public abstract class FileManagerController_BaseIT {
     protected static Path tmpDir;
 
     @BeforeAll
-    protected void setUp() throws IOException {
+    protected void setUp() {
         baseUrl = "http://localhost:" + portNumber + "/fileManager";
         System.setProperty("storage.root", tmpDir.toString());
     }
@@ -47,9 +47,10 @@ public abstract class FileManagerController_BaseIT {
         FileSystemUtils.deleteRecursively(tmpDir);
     }
 
-    protected void writeTestTextFile(String relativePath, String content) throws IOException {
+    protected void writeTestTextFile(String relativePath, String content) throws Exception {
         final File toWrite = new File(tmpDir.toFile(), relativePath);
-        toWrite.getParentFile().mkdirs();
+        boolean isSuccess = toWrite.getParentFile().mkdirs();
+        if(!isSuccess) throw new Exception("Could not create directories");
         try(FileWriter writer = new FileWriter(toWrite)) {
             writer.write(content);
         }

@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.io.IOException;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -15,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class FileManagerController_ListFilesIT extends FileManagerController_BaseIT {
 
     @Test
-    void shouldListAllFiles() throws IOException {
+    void shouldListAllFiles() throws Exception {
         final String fileName1 = "/dir1/file1.txt";
         final String fileName2 = "/dir2/dir3/file2.txt";
         final String fileName3 = "/file3.txt";
