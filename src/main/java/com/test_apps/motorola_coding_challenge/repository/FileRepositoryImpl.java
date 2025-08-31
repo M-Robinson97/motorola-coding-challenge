@@ -74,7 +74,12 @@ public class FileRepositoryImpl implements FileRepository {
             final Path filePath = storageService.createFilePath(fileName);
             storageService.deleteFile(filePath);
         } catch (Exception e) {
-            throw new FileSystemException(DELETE_FILE_FAILS, e);
+            // Need to prefix here because of my custom FileNotFoundException class
+            if(e instanceof java.io.FileNotFoundException) {
+                throw new FileNotFoundException(FILE_NOT_FOUND_ERROR, e);
+            } else {
+                throw new FileSystemException(DELETE_FILE_FAILS, e);
+            }
         }
     }
 }

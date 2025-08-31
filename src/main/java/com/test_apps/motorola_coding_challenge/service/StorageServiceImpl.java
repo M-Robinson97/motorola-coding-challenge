@@ -7,6 +7,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.net.URI;
 import java.nio.file.Files;
@@ -60,6 +61,10 @@ public class StorageServiceImpl implements StorageService {
 
     @Override
     public void deleteFile(Path filePath) throws Exception {
-        Files.delete(filePath);
+        if(Files.exists(filePath)) {
+            Files.delete(filePath);
+        } else {
+            throw new FileNotFoundException();
+        }
     }
 }
