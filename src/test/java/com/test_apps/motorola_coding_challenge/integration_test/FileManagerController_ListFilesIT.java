@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -42,7 +44,9 @@ public class FileManagerController_ListFilesIT extends FileManagerController_Bas
     }
 
     @Test
-    void shouldListFiles_SuccessEmptyList() {
+    void shouldListFiles_SuccessEmptyList() throws IOException {
+        // Teardown means we need to create root dir manually if not creating a file
+        Files.createDirectories(tmpDir);
         ResponseEntity<FileListDto> response =
                 restTemplate.getForEntity(baseUrl, FileListDto.class);
 

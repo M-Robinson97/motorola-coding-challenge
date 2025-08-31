@@ -2,7 +2,7 @@ package com.test_apps.motorola_coding_challenge.integration_test;
 
 import com.test_apps.motorola_coding_challenge.MotorolaCodingChallengeApplication;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +41,7 @@ public abstract class FileManagerController_BaseIT {
     protected TestRestTemplate restTemplate;
 
     protected String baseUrl;
+    // Set via @DynamicPropertySource method before test run
     protected static Path tmpDir;
 
     @BeforeAll
@@ -49,7 +50,7 @@ public abstract class FileManagerController_BaseIT {
         System.setProperty("storage.root", tmpDir.toString());
     }
 
-    @AfterAll
+    @AfterEach
     protected void tearDown() throws IOException{
         FileSystemUtils.deleteRecursively(tmpDir);
     }
