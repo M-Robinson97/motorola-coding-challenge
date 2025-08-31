@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class FileManagerController_ListFilesIT extends FileManagerController_BaseIT {
 
     @Test
-    void shouldListAllFiles() throws Exception {
+    void shouldListFiles_Success() throws Exception {
         final String fileName1 = "/dir1/file1.txt";
         final String fileName2 = "/dir2/dir3/file2.txt";
         final String fileName3 = "/file3.txt";

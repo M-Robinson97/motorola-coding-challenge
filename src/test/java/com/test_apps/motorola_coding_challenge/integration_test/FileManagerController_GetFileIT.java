@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class FileManagerController_GetFileIT extends FileManagerController_BaseIT {
 
     @Test
-    void shouldGetFileByName() throws Exception {
+    void shouldGetFile_Success() throws Exception {
         final String fileName = "file.txt";
         final String relativePath = "/dir/nestedDir/" + fileName;
         final String fileContent = "I am a teapot";
