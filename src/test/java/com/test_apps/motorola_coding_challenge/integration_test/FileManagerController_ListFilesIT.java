@@ -30,13 +30,10 @@ public class FileManagerController_ListFilesIT extends FileManagerController_Bas
         ResponseEntity<FileListDto> response =
                 restTemplate.getForEntity(baseUrl, FileListDto.class);
 
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertNotNull(response.getBody());
         assertNotNull(response.getBody().getFileNames());
         List<String> fileNames = response.getBody().getFileNames();
-        System.out.println(response.getBody());
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-
-        // Check that the relative file paths are returned
         assertThat(fileNames).containsExactlyInAnyOrder(
                 "dir1\\file1.txt",
                 "dir2\\dir3\\file2.txt",

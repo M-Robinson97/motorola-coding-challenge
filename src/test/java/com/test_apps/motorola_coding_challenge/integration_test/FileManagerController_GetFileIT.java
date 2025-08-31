@@ -1,0 +1,34 @@
+package com.test_apps.motorola_coding_challenge.integration_test;
+
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
+import java.nio.charset.StandardCharsets;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+public class FileManagerController_GetFileIT extends FileManagerController_BaseIT {
+
+    @Test
+    void shouldGetFileByName() throws Exception {
+        final String fileName = "file.txt";
+        final String relativePath = "/dir/nestedDir/" + fileName;
+        final String fileContent = "I am a teapot";
+        final String fileUrl = baseUrl + relativePath;
+
+        writeTestTextFile(relativePath, fileContent);
+
+        ResponseEntity<Resource> response = restTemplate.getForEntity(fileUrl, Resource.class);
+
+        Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertNotNull(response.getBody());
+        Resource resource = response.getBody();
+        assertThat(resource.getFilename()).isEqualTo(fileName);
+        String resultFileContent = new String(resource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+        assertThat(resultFileContent).isEqualTo(fileContent);
+    }
+}

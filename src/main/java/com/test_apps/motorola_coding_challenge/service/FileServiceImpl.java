@@ -47,10 +47,11 @@ public class FileServiceImpl implements FileService {
                 Optional.ofNullable(fileName)
                         .filter(name -> !name.isEmpty())
                         .orElseThrow(() -> new FileNameRequiredException(FILE_NAME_REQUIRED_ERROR))
-        ).trim();
-        if (cleanFileName.contains("..") || Paths.get(cleanFileName).isAbsolute()) {
+        );
+        String trimmedFileName = StringUtils.trimLeadingCharacter(cleanFileName, '/').trim();
+        if (trimmedFileName.contains("..") || Paths.get(trimmedFileName).isAbsolute()) {
             throw new SecurityException(INVALID_FILE_NAME_ERROR);
         }
-        return cleanFileName;
+        return trimmedFileName;
     }
 }

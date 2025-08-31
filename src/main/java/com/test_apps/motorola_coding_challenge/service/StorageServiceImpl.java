@@ -39,7 +39,7 @@ public class StorageServiceImpl implements StorageService {
 
     @Override
     public Path createFilePath(String fileName) {
-        return getPathFromRoot().resolve(Path.of(fileName));
+        return getPathFromRoot().resolve(fileName);
     }
 
     @Override

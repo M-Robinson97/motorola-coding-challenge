@@ -27,13 +27,13 @@ public class FileManagerController {
         return ResponseEntity.ok(dto);
     }
 
-    // GET /fileManager/{filename}
-    @GetMapping("/{filename}")
-    public ResponseEntity<Resource> getFile(@PathVariable String filename) {
-        Resource file = fileService.getFile(filename);
-         return ResponseEntity.ok()
-                 .header(HttpHeaders.CONTENT_DISPOSITION, filename)
-                 .body(file);
+    // GET /fileManager/{filepath}
+    @GetMapping("/{*filepath}") // search file inside a specific subdirectory
+    public ResponseEntity<Resource> getFile(@PathVariable String filepath) {
+        Resource resource = fileService.getFile(filepath);
+        return ResponseEntity.ok()
+                 .header(HttpHeaders.CONTENT_DISPOSITION,  "attachment; filename=\"" + resource.getFilename() + "\"")
+                 .body(resource);
     }
 
     // POST /fileManager
