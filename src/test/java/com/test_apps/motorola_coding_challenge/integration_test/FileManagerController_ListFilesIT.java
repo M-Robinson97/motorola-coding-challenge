@@ -17,6 +17,7 @@ public class FileManagerController_ListFilesIT extends FileManagerController_Bas
 
     @Test
     void shouldListFiles_Success() throws Exception {
+        // Arrange
         final String fileName1 = "/dir1/file1.txt";
         final String fileName2 = "/dir2/dir3/file2.txt";
         final String fileName3 = "/file3.txt";
@@ -29,9 +30,11 @@ public class FileManagerController_ListFilesIT extends FileManagerController_Bas
         writeTestTextFile(fileName2, fileContent2);
         writeTestTextFile(fileName3, fileContent3);
 
+        // Act
         ResponseEntity<FileListDto> response =
                 restTemplate.getForEntity(baseUrl, FileListDto.class);
 
+        // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertNotNull(response.getBody());
         assertNotNull(response.getBody().getFileNames());
@@ -45,11 +48,15 @@ public class FileManagerController_ListFilesIT extends FileManagerController_Bas
 
     @Test
     void shouldListFiles_SuccessEmptyList() throws IOException {
+        // Arrange
         // Teardown means we need to create root dir manually if not creating a file
         Files.createDirectories(tmpDir);
+
+        // Act
         ResponseEntity<FileListDto> response =
                 restTemplate.getForEntity(baseUrl, FileListDto.class);
 
+        // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertNotNull(response.getBody());
         assertNotNull(response.getBody().getFileNames());

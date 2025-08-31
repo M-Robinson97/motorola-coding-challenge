@@ -26,6 +26,9 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+/**
+Abstract base class containing common functions to be inherited by endpoint ITs.
+ */
 @Slf4j
 @SpringBootTest(
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
@@ -64,6 +67,7 @@ public abstract class FileManagerController_BaseIT {
         }
     }
 
+    // Build a sample MultipartFile to test POST
     protected HttpEntity<MultiValueMap<String, Object>> getTestHttpEntity(String fileRelativeUrl, String fileContent, String fileUrl) {
         return RequestEntity
                 .post(URI.create(fileUrl))
@@ -80,6 +84,7 @@ public abstract class FileManagerController_BaseIT {
                 });
     }
 
+    // Manually set root to a temporary directory so we can test real memory operations
     @DynamicPropertySource
     static void overrideProps(DynamicPropertyRegistry registry) throws IOException{
         tmpDir = Files.createTempDirectory("file-manager-test");

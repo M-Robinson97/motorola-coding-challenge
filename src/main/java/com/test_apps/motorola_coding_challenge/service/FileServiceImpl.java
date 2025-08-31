@@ -14,6 +14,10 @@ import java.util.Optional;
 
 import static com.test_apps.motorola_coding_challenge.repository.exception.ExceptionMessages.*;
 
+/**
+ * Service class cleans user input and is otherwise mostly pass-through for this simple API. For a more complex
+ * implementation, we could run business logic from here.
+ */
 @Service
 @RequiredArgsConstructor
 public class FileServiceImpl implements FileService {

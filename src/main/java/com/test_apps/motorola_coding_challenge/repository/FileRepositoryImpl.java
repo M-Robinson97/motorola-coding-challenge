@@ -17,6 +17,11 @@ import java.util.List;
 
 import static com.test_apps.motorola_coding_challenge.repository.exception.ExceptionMessages.*;
 
+/**
+This implementation of a {@link FileRepository} relies on a {@link StorageService} to perform memory operations. For a more
+ complex API, it would be simple enough to switch this implementation out for one which, for example, interacts with
+ a relational database.
+ */
 @Slf4j
 @Repository
 @RequiredArgsConstructor
@@ -25,8 +30,10 @@ public class FileRepositoryImpl implements FileRepository {
 
     @Override
     public FileListDto getAllFileNames() {
-            final Path rootPath = storageService.getPathFromRoot();
-            log.info("Getting file names from: {}", rootPath);
+        final Path rootPath = storageService.getPathFromRoot();
+
+        log.info("Getting file names from: {}", rootPath);
+
         try {
             List<String> allFileNames =  storageService.getAllPaths(rootPath);
             return new FileListDto(allFileNames);
@@ -37,6 +44,7 @@ public class FileRepositoryImpl implements FileRepository {
 
     @Override
     public Resource get(String fileName) {
+
         log.info("Getting file with name: {}", fileName);
 
         final Path filePath = storageService.createFilePath(fileName);
@@ -55,6 +63,7 @@ public class FileRepositoryImpl implements FileRepository {
 
     @Override
     public String save(MultipartFile file, String fileName) {
+
         log.info("Saving file with name: {}", fileName);
 
         final Path filePath = storageService.createFilePath(fileName);
@@ -69,7 +78,9 @@ public class FileRepositoryImpl implements FileRepository {
 
     @Override
     public void delete(String fileName) {
+
         log.info("Deleting file with name: {}", fileName);
+
         try {
             final Path filePath = storageService.createFilePath(fileName);
             storageService.deleteFile(filePath);

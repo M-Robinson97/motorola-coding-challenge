@@ -7,6 +7,10 @@ import org.springframework.stereotype.Component;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+/**
+ * Injectable component to make root storage path (i) accessible from a class in the application and (ii) modifiable
+ * from integration tests.
+ */
 @Component
 @ConfigurationProperties(prefix = "storage")
 @Data

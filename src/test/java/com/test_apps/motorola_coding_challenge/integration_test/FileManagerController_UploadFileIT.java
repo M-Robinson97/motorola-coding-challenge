@@ -11,6 +11,7 @@ public class FileManagerController_UploadFileIT extends FileManagerController_Ba
 
     @Test
     void shouldUploadFile_Success() {
+        // Arrange
         final String fileName = "file.txt";
         final String relativePath = "/dir/nestedDir/" + fileName;
         final String fileContent = "I am a teapot";
@@ -18,8 +19,11 @@ public class FileManagerController_UploadFileIT extends FileManagerController_Ba
         final String expectedFileName = "dir/nestedDir/" + fileName;
 
         HttpEntity<MultiValueMap<String, Object>> testFile = getTestHttpEntity(relativePath, fileContent, fileUrl);
+
+        // Act
         ResponseEntity<String> response = restTemplate.postForEntity(fileUrl, testFile, String.class);
 
+        // Assert
         assertNotNull(response);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertNotNull(response.getBody());
@@ -28,6 +32,7 @@ public class FileManagerController_UploadFileIT extends FileManagerController_Ba
 
     @Test
     void shouldUploadFile_SuccessForOverwriting() {
+        // Arrange
         final String fileName = "file.txt";
         final String relativePath = "/dir/nestedDir/" + fileName;
         final String fileContent1 = "I am a teapot";
@@ -38,9 +43,11 @@ public class FileManagerController_UploadFileIT extends FileManagerController_Ba
         HttpEntity<MultiValueMap<String, Object>> testFile1 = getTestHttpEntity(relativePath, fileContent1, fileUrl);
         HttpEntity<MultiValueMap<String, Object>> testFile2 = getTestHttpEntity(relativePath, fileContent2, fileUrl);
 
+        // Act
         ResponseEntity<String> response1 = restTemplate.postForEntity(fileUrl, testFile1, String.class);
         ResponseEntity<String> response2 = restTemplate.postForEntity(fileUrl, testFile2, String.class);
 
+        // Assert
         assertNotNull(response1);
         assertThat(response1.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertNotNull(response1.getBody());
@@ -53,26 +60,34 @@ public class FileManagerController_UploadFileIT extends FileManagerController_Ba
 
     @Test
     void shouldUploadFile_FailWithBadRequestForAbsolutePath() {
+        // Arrange
         final String relativePath = "/C:/dir/nestedDir/stealingyoursecrets.txt";
         final String fileContent = "I am a teapot";
         final String fileUrl = baseUrl + relativePath;
 
         HttpEntity<MultiValueMap<String, Object>> testFile = getTestHttpEntity(relativePath, fileContent, fileUrl);
+
+        // Act
         ResponseEntity<String> response = restTemplate.postForEntity(fileUrl, testFile, String.class);
 
+        // Assert
         assertNotNull(response);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
     @Test
     void shouldUploadFile_FailWithBadRequestForGettingParentDirectory() {
+        // Arrange
         final String relativePath = "/../../definitelystealingyoursecretsnow.txt";
         final String fileContent = "I am a teapot";
         final String fileUrl = baseUrl + relativePath;
 
         HttpEntity<MultiValueMap<String, Object>> testFile = getTestHttpEntity(relativePath, fileContent, fileUrl);
+
+        // Act
         ResponseEntity<String> response = restTemplate.postForEntity(fileUrl, testFile, String.class);
 
+        // Assert
         assertNotNull(response);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }

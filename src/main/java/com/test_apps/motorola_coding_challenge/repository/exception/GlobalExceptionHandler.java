@@ -10,6 +10,9 @@ import java.util.Map;
 
 import static com.test_apps.motorola_coding_challenge.repository.exception.ExceptionMessages.*;
 
+/**
+Error interceptor mapping errors to the correct HTTP Error Response for the controller.
+ */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 

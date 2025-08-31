@@ -14,6 +14,7 @@ public class FileManagerController_GetFileIT extends FileManagerController_BaseI
 
     @Test
     void shouldGetFile_Success() throws Exception {
+        // Arrange
         final String fileName = "file.txt";
         final String relativePath = "/dir/nestedDir/" + fileName;
         final String fileContent = "I am a teapot";
@@ -21,8 +22,10 @@ public class FileManagerController_GetFileIT extends FileManagerController_BaseI
 
         writeTestTextFile(relativePath, fileContent);
 
+        // Act
         ResponseEntity<Resource> response = restTemplate.getForEntity(fileUrl, Resource.class);
 
+        // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertNotNull(response.getBody());
         Resource resource = response.getBody();
@@ -33,21 +36,27 @@ public class FileManagerController_GetFileIT extends FileManagerController_BaseI
 
     @Test
     void shouldGetFile_FailWithBadRequestForAbsolutePath() {
+        // Arrange
         final String relativePath = "/C:/tellmeallyoursecrets.txt";
         final String badFileUrl = baseUrl + relativePath;
 
+        // Act
         ResponseEntity<Resource> response = restTemplate.getForEntity(badFileUrl, Resource.class);
 
+        // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
     @Test
     void shouldGetFile_FailWithBadRequestForGettingParentDirectory() {
+        // Arrange
         final String relativePath = "/../../tellmeallyoursecrets.txt";
         final String badFileUrl = baseUrl + relativePath;
 
+        // Act
         ResponseEntity<Resource> response = restTemplate.getForEntity(badFileUrl, Resource.class);
 
+        // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 }

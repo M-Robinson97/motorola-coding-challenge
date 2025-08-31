@@ -16,6 +16,9 @@ import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.stream.Stream;
 
+/**
+Service handling memory interactions. Separated out from repository to improve modularity and ease of testing.
+ */
 @Service
 @RequiredArgsConstructor
 @Getter

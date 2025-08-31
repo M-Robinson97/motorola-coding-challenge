@@ -2,6 +2,9 @@ package com.test_apps.motorola_coding_challenge.repository.exception;
 
 import lombok.experimental.UtilityClass;
 
+/**
+Utility class standardizing error messages for ease of testing.
+ */
 @UtilityClass
 public class ExceptionMessages {
     public static final String GET_ALL_FILES_FAILS = "Could not retrieve file names";
