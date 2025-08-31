@@ -54,6 +54,7 @@ public class StorageServiceImpl implements StorageService {
 
     @Override
     public void copyFile(InputStream inputStream, Path filePath) throws Exception {
+        Files.createDirectories(filePath.getParent());
         Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
     }
 

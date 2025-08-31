@@ -27,7 +27,7 @@ public class FileManagerController {
         return ResponseEntity.ok(dto);
     }
 
-    // GET /fileManager/{filepath}
+    // GET /fileManager/{*filepath}
     @GetMapping("/{*filepath}") // search file inside a specific subdirectory
     public ResponseEntity<Resource> getFile(@PathVariable String filepath) {
         Resource resource = fileService.getFile(filepath);
@@ -37,16 +37,16 @@ public class FileManagerController {
     }
 
     // POST /fileManager
-    @PostMapping
+    @PostMapping("/{*filepath}")
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
         String savedFileName = fileService.postFile(file);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedFileName);
     }
 
-    // DELETE /fileManager/{filename}
-    @DeleteMapping
-    public ResponseEntity<Void> deleteFile(@PathVariable String filename) {
-        fileService.deleteFile(filename);
-        return ResponseEntity.noContent().build();
+    // DELETE /fileManager/{*filepath}
+    @DeleteMapping("/{*filepath}")
+    public ResponseEntity<Void> deleteFile(@PathVariable String filepath) {
+        fileService.deleteFile(filepath);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

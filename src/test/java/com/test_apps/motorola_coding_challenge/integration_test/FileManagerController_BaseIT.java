@@ -9,13 +9,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.MediaType;
+import org.springframework.http.RequestEntity;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.util.FileSystemUtils;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -54,6 +61,22 @@ public abstract class FileManagerController_BaseIT {
         try(FileWriter writer = new FileWriter(toWrite)) {
             writer.write(content);
         }
+    }
+
+    protected HttpEntity<MultiValueMap<String, Object>> getTestHttpEntity(String fileRelativeUrl, String fileContent, String fileUrl) {
+        return RequestEntity
+                .post(URI.create(fileUrl))
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .body(new LinkedMultiValueMap<>() {
+                    {
+                        add("file", new ByteArrayResource(fileContent.getBytes()) {
+                            @Override
+                            public String getFilename() {
+                                return fileRelativeUrl;
+                            }
+                        });
+                    }
+                });
     }
 
     @DynamicPropertySource
