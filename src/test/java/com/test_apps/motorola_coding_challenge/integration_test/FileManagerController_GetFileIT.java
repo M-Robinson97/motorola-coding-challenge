@@ -1,6 +1,5 @@
 package com.test_apps.motorola_coding_challenge.integration_test;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
@@ -24,7 +23,7 @@ public class FileManagerController_GetFileIT extends FileManagerController_BaseI
 
         ResponseEntity<Resource> response = restTemplate.getForEntity(fileUrl, Resource.class);
 
-        Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertNotNull(response.getBody());
         Resource resource = response.getBody();
         assertThat(resource.getFilename()).isEqualTo(fileName);
