@@ -1,5 +1,6 @@
 package com.test_apps.motorola_coding_challenge.service;
 
+import com.test_apps.motorola_coding_challenge.model.FileListDto;
 import com.test_apps.motorola_coding_challenge.repository.exception.FileNameRequiredException;
 import com.test_apps.motorola_coding_challenge.repository.exception.FileNotFoundException;
 import com.test_apps.motorola_coding_challenge.repository.exception.FileSystemException;
@@ -30,11 +31,13 @@ public class FileServiceImplTest {
     @Test
     void listFiles_FilesFound() {
         // Arrange
-        final List<String> expected = Arrays.asList("name1", "name2", "name3");
+        final List<String> expectedList = Arrays.asList("name1", "name2", "name3");
+        final FileListDto expected = new FileListDto(expectedList);
+
         when(fileRepositoryMock.getAllFileNames()).thenReturn(expected);
 
         // Act
-        final List<String> result = fileService.listFiles();
+        final FileListDto result = fileService.listFiles();
 
         // Assert
         assertEquals(expected, result);
@@ -43,14 +46,15 @@ public class FileServiceImplTest {
     @Test
     void listFiles_EmptyList() {
         // Arrange
-        when(fileRepositoryMock.getAllFileNames()).thenReturn(Collections.emptyList());
+        when(fileRepositoryMock.getAllFileNames()).thenReturn(new FileListDto(Collections.emptyList()));
 
         // Act
-        final List<String> result = fileService.listFiles();
+        final FileListDto result = fileService.listFiles();
 
         // Assert
         assertNotNull(result);
-        assertEquals(0, result.size());
+        assertNotNull(result.getFileNames());
+        assertEquals(0, result.getFileNames().size());
     }
 
     @Test

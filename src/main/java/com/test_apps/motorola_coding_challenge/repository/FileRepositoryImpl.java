@@ -1,5 +1,6 @@
 package com.test_apps.motorola_coding_challenge.repository;
 
+import com.test_apps.motorola_coding_challenge.model.FileListDto;
 import com.test_apps.motorola_coding_challenge.repository.exception.FileNotFoundException;
 import com.test_apps.motorola_coding_challenge.repository.exception.FileSystemException;
 import com.test_apps.motorola_coding_challenge.service.StorageService;
@@ -23,13 +24,12 @@ public class FileRepositoryImpl implements FileRepository {
     private final StorageService storageService;
 
     @Override
-    public List<String> getAllFileNames() {
+    public FileListDto getAllFileNames() {
             final Path rootPath = storageService.getPathFromRoot();
             log.info("Getting file names from: {}", rootPath);
         try {
-            return storageService.getAllPaths(rootPath)
-                    .map(Path::toString)
-                    .toList();
+            List<String> allFileNames =  storageService.getAllPaths(rootPath);
+            return new FileListDto(allFileNames);
         } catch (Exception e) {
             throw new FileSystemException(GET_ALL_FILES_FAILS, e);
         }

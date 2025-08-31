@@ -1,5 +1,6 @@
 package com.test_apps.motorola_coding_challenge.service;
 
+import com.test_apps.motorola_coding_challenge.model.FileListDto;
 import com.test_apps.motorola_coding_challenge.repository.exception.FileNameRequiredException;
 import com.test_apps.motorola_coding_challenge.repository.FileRepository;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +10,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.Paths;
-import java.util.List;
 import java.util.Optional;
 
 import static com.test_apps.motorola_coding_challenge.repository.exception.ExceptionMessages.*;
@@ -20,7 +20,7 @@ public class FileServiceImpl implements FileService {
     private final FileRepository fileRepository;
 
     @Override
-    public List<String> listFiles() {
+    public FileListDto listFiles() {
         return fileRepository.getAllFileNames();
     }
 

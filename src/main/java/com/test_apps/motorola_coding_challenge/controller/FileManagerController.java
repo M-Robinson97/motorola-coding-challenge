@@ -22,8 +22,7 @@ public class FileManagerController {
     // GET /fileManager
     @GetMapping
     public ResponseEntity<FileListDto> listFiles() {
-        final List<String> files = fileService.listFiles();
-        final FileListDto dto = new FileListDto(files);
+        final FileListDto dto = fileService.listFiles();
         return ResponseEntity.ok(dto);
     }
 
@@ -36,7 +35,7 @@ public class FileManagerController {
                  .body(resource);
     }
 
-    // POST /fileManager
+    // POST /fileManager/{*filepath}
     @PostMapping("/{*filepath}")
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
         String savedFileName = fileService.postFile(file);

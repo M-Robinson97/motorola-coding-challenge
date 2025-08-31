@@ -13,6 +13,7 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 import java.util.stream.Stream;
 
 @Service
@@ -28,13 +29,13 @@ public class StorageServiceImpl implements StorageService {
     }
 
     @Override
-    public Stream<Path> getAllPaths(Path rootPath) throws Exception {
+    public List<String> getAllPaths(Path rootPath) throws Exception {
         try (Stream<Path> stream = Files.walk(rootPath)) {
             return stream
                     .filter(Files::isRegularFile)
                     .map(rootPath::relativize)
-                    .toList()
-                    .stream();
+                    .map(Path::toString)
+                    .toList();
         }
     }
 

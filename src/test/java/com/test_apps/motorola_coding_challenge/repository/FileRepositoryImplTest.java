@@ -1,5 +1,6 @@
 package com.test_apps.motorola_coding_challenge.repository;
 
+import com.test_apps.motorola_coding_challenge.model.FileListDto;
 import com.test_apps.motorola_coding_challenge.repository.exception.FileNotFoundException;
 import com.test_apps.motorola_coding_challenge.repository.exception.FileSystemException;
 import com.test_apps.motorola_coding_challenge.service.StorageService;
@@ -17,8 +18,8 @@ import java.io.InputStream;
 import java.net.URI;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Stream;
 
 import static com.test_apps.motorola_coding_challenge.repository.exception.ExceptionMessages.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -40,19 +41,16 @@ public class FileRepositoryImplTest {
         final String fileThree = root + "dirTwo\\dirThree\\fileThree.txt";
 
         final Path rootPath = Path.of(root);
-        final Path fileOnePath = Path.of(fileOne);
-        final Path fileTwoPath = Path.of(fileTwo);
-        final Path fileThreePath = Path.of(fileThree);
 
-        final Stream<Path> paths = Stream.of(fileOnePath, fileTwoPath, fileThreePath);
+        final List<String> paths = Arrays.asList(fileOne, fileTwo, fileThree);
 
         when(storageServiceMock.getPathFromRoot()).thenReturn(rootPath);
         when(storageServiceMock.getAllPaths(rootPath)).thenReturn(paths);
 
-        final List<String> expected = Arrays.asList(fileOne, fileTwo, fileThree);
+        final FileListDto expected = new FileListDto(paths);
 
         // Act
-        final List<String> result = fileRepository.getAllFileNames();
+        final FileListDto result = fileRepository.getAllFileNames();
 
         // Assert
         assertNotNull(result);
@@ -65,17 +63,16 @@ public class FileRepositoryImplTest {
         final String root = "\\root\\";
         final Path rootPath = Path.of(root);
 
-        final Stream<Path> paths = Stream.empty();
-
         when(storageServiceMock.getPathFromRoot()).thenReturn(rootPath);
-        when(storageServiceMock.getAllPaths(rootPath)).thenReturn(paths);
+        when(storageServiceMock.getAllPaths(rootPath)).thenReturn(Collections.emptyList());
 
         // Act
-        final List<String> result = fileRepository.getAllFileNames();
+        final FileListDto result = fileRepository.getAllFileNames();
 
         // Assert
         assertNotNull(result);
-        assertEquals(0, result.size());
+        assertNotNull(result.getFileNames());
+        assertEquals(0, result.getFileNames().size());
     }
 
     @Test
@@ -257,7 +254,7 @@ public class FileRepositoryImplTest {
         final Path pathMock = mock(Path.class);
 
         when(storageServiceMock.createFilePath(fileName)).thenReturn(pathMock);
-        doThrow(new FileSystemException(DELETE_FILE_FAILS)).when(storageServiceMock).deleteFile(pathMock);
+        doThrow(new FileNotFoundException(DELETE_FILE_FAILS)).when(storageServiceMock).deleteFile(pathMock);
 
         // Act
         Exception exception = assertThrows(Exception.class, () -> fileRepository.delete(fileName));
