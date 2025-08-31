@@ -40,4 +40,16 @@ public class FileManagerController_ListFilesIT extends FileManagerController_Bas
                 "file3.txt"
         );
     }
+
+    @Test
+    void shouldListFiles_SuccessEmptyList() {
+        ResponseEntity<FileListDto> response =
+                restTemplate.getForEntity(baseUrl, FileListDto.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertNotNull(response.getBody());
+        assertNotNull(response.getBody().getFileNames());
+        List<String> fileNames = response.getBody().getFileNames();
+        assertThat(fileNames).isEmpty();
+    }
 }

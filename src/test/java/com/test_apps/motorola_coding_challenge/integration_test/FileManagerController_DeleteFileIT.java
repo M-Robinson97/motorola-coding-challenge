@@ -30,4 +30,53 @@ public class FileManagerController_DeleteFileIT extends FileManagerController_Ba
         assertNotNull(response);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
     }
+
+    @Test
+    void shouldDeleteFile_FailsNoSuchFile() {
+        final String fileName = "file.txt";
+        final String relativePath = "/dir/nestedDir/" + fileName;
+        final String fileUrl = baseUrl + relativePath;
+
+        ResponseEntity<Void> response = restTemplate.exchange(
+                fileUrl,
+                HttpMethod.DELETE,
+                null,
+                Void.class
+        );
+
+        assertNotNull(response);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    void shouldDeleteFile_FailWithBadRequestForAbsolutePath() {
+        final String relativePath = "/C:/deletingyourimportantsystemfiles.txt";
+        final String fileUrl = baseUrl + relativePath;
+
+        ResponseEntity<Void> response = restTemplate.exchange(
+                fileUrl,
+                HttpMethod.DELETE,
+                null,
+                Void.class
+        );
+
+        assertNotNull(response);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    void shouldDeleteFile_FailWithBadRequestForGettingParentDirectory() {
+        final String relativePath = "/../../deletingyourdreamjobapplication.txt";
+        final String fileUrl = baseUrl + relativePath;
+
+        ResponseEntity<Void> response = restTemplate.exchange(
+                fileUrl,
+                HttpMethod.DELETE,
+                null,
+                Void.class
+        );
+
+        assertNotNull(response);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
 }

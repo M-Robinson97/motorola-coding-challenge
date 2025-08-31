@@ -30,4 +30,24 @@ public class FileManagerController_GetFileIT extends FileManagerController_BaseI
         String resultFileContent = new String(resource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
         assertThat(resultFileContent).isEqualTo(fileContent);
     }
+
+    @Test
+    void shouldGetFile_FailWithBadRequestForAbsolutePath() {
+        final String relativePath = "/C:/tellmeallyoursecrets.txt";
+        final String badFileUrl = baseUrl + relativePath;
+
+        ResponseEntity<Resource> response = restTemplate.getForEntity(badFileUrl, Resource.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    void shouldGetFile_FailWithBadRequestForGettingParentDirectory() {
+        final String relativePath = "/../../tellmeallyoursecrets.txt";
+        final String badFileUrl = baseUrl + relativePath;
+
+        ResponseEntity<Resource> response = restTemplate.getForEntity(badFileUrl, Resource.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
 }
