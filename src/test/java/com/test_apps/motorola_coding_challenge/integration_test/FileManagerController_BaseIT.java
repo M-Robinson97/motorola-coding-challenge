@@ -1,0 +1,93 @@
+package com.test_apps.motorola_coding_challenge.integration_test;
+
+import com.test_apps.motorola_coding_challenge.MotorolaCodingChallengeApplication;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.TestInstance;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.MediaType;
+import org.springframework.http.RequestEntity;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.util.FileSystemUtils;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
+/**
+Abstract base class containing common functions to be inherited by endpoint ITs.
+ */
+@Slf4j
+@SpringBootTest(
+        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+        classes = MotorolaCodingChallengeApplication.class
+)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+public abstract class FileManagerController_BaseIT {
+
+    @LocalServerPort
+    protected int portNumber;
+
+    @Autowired
+    protected TestRestTemplate restTemplate;
+
+    protected String baseUrl;
+    // Set via @DynamicPropertySource method before test run
+    protected static Path tmpDir;
+
+    @BeforeAll
+    protected void setUp() {
+        baseUrl = "http://localhost:" + portNumber + "/fileManager";
+        System.setProperty("storage.root", tmpDir.toString());
+    }
+
+    @AfterEach
+    protected void tearDown() throws IOException{
+        FileSystemUtils.deleteRecursively(tmpDir);
+    }
+
+    protected void writeTestTextFile(String relativePath, String content) throws Exception {
+        final File toWrite = new File(tmpDir.toFile(), relativePath);
+        boolean isSuccess = toWrite.getParentFile().mkdirs();
+        log.info("Directories created for {}: {}", relativePath, isSuccess);
+        try(FileWriter writer = new FileWriter(toWrite)) {
+            writer.write(content);
+        }
+    }
+
+    // Build a sample MultipartFile to test POST
+    protected HttpEntity<MultiValueMap<String, Object>> getTestHttpEntity(String fileRelativeUrl, String fileContent, String fileUrl) {
+        return RequestEntity
+                .post(URI.create(fileUrl))
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .body(new LinkedMultiValueMap<>() {
+                    {
+                        add("file", new ByteArrayResource(fileContent.getBytes()) {
+                            @Override
+                            public String getFilename() {
+                                return fileRelativeUrl;
+                            }
+                        });
+                    }
+                });
+    }
+
+    // Manually set root to a temporary directory so we can test real memory operations
+    @DynamicPropertySource
+    static void overrideProps(DynamicPropertyRegistry registry) throws IOException{
+        tmpDir = Files.createTempDirectory("file-manager-test");
+        registry.add("storage.root", tmpDir::toString);
+    }
+}
